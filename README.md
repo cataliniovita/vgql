@@ -1,0 +1,2 @@
+# vgql
+Vulnerable GraphQL application
