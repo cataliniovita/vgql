@@ -1,25 +1,35 @@
-FROM python:3.9-slim
+FROM python:3.10
 
-WORKDIR /app
+LABEL description="Damn Vulnerable GraphQL Application"
+LABEL github="https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application"
+LABEL maintainers="Dolev Farhi & Nick Aleks"
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+ARG TARGET_FOLDER=/opt/dvga
+WORKDIR $TARGET_FOLDER/
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt install curl git
 
-# Copy application code
-COPY . .
+RUN useradd dvga -m 
+RUN chown dvga. $TARGET_FOLDER/
+USER dvga
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
+RUN python -m venv venv
+RUN . venv/bin/activate
+RUN pip3 install --user --upgrade pip --no-warn-script-location --disable-pip-version-check
 
-# Expose port
-EXPOSE 5013
+ADD --chown=dvga:dvga core /opt/dvga/core
+ADD --chown=dvga:dvga db /opt/dvga/db
+ADD --chown=dvga:dvga static /opt/dvga/static
+ADD --chown=dvga:dvga templates /opt/dvga/templates
 
-# Run the application
-CMD ["python", "app.py"] 
+COPY --chown=dvga:dvga app.py /opt/dvga
+COPY --chown=dvga:dvga config.py /opt/dvga
+COPY --chown=dvga:dvga setup.py /opt/dvga/
+COPY --chown=dvga:dvga version.py /opt/dvga/
+COPY --chown=dvga:dvga requirements.txt /opt/dvga/
+
+RUN pip3 install -r requirements.txt --user --no-warn-script-location
+RUN python setup.py
+
+EXPOSE 5013/tcp
+CMD ["python", "app.py"]

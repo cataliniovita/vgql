@@ -1,208 +1,191 @@
-# Social Media GraphQL API
+# Damn Vulnerable GraphQL Application
 
-A modern GraphQL-powered social media platform built with Flask and Graphene.
+Damn Vulnerable GraphQL Application is an intentionally vulnerable implementation of Facebook's GraphQL technology, to learn and practice GraphQL Security.
 
-## Features
+<p align="center">
+  <img src="https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application/blob/master/static/images/dvgql_logo.png?raw=true" width="300px" alt="DVGA"/>
+</p>
 
-- **User Management**: Create and manage user accounts with role-based permissions
-- **Content Management**: Create, read, and manage posts with public and private visibility
-- **Comment System**: Enable user interactions with a robust commenting system
-- **Real-time Updates**: WebSocket support for real-time features
-- **GraphQL Interface**: Full GraphQL API with introspection enabled
-- **Admin Dashboard**: Web-based administration panel
+# Table of Contents
+* [About DVGA](#about)
+* [Operation Modes](#operation-modes)
+* [Scenarios](#scenarios)
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+  * [Installation - Docker](#docker)
+  * [Installation - Docker Registry](#docker-registry)
+  * [Installation - Server](#server)
+* [Screenshots](#screenshots)
+* [Maintainers](#maintainers)
+* [Contributors](#contributors)
+* [Mentions](#mentions)
+* [Disclaimer](#disclaimer)
+* [License](#license)
 
-## Quick Start
+# About DVGA
 
-### Prerequisites
+Damn Vulnerable GraphQL is a deliberately weak and insecure implementation of GraphQL that provides a safe environment to attack a GraphQL application, allowing developers and IT professionals to test for vulnerabilities.
 
-- Python 3.7+
-- pip
+## DVGA Operation Support
 
-### Installation
+- Queries
+- Mutations
+- Subscriptions
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd social-media-graphql-api
-```
+DVGA has numerous flaws, such as Injections, Code Executions, Bypasses, Denial of Service, and more. See the full list under the [Scenarios](#scenarios) section. A public [Postman collection](https://www.postman.com/devrel/workspace/ab3d0551-b65d-4588-b464-1a317e8d7e98/collection/14270212-b5875c90-d36e-43f4-8bd7-2c81b556245d?action=share&creator=14270212) is also available to replay solutions to the challenges. You can import the collection by clicking on the Run in Postman button below.
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/14270212-b5875c90-d36e-43f4-8bd7-2c81b556245d?action=collection%2Ffork&collection-url=entityId%3D14270212-b5875c90-d36e-43f4-8bd7-2c81b556245d%26entityType%3Dcollection%26workspaceId%3Dab3d0551-b65d-4588-b464-1a317e8d7e98)
 
-3. Run the application:
-```bash
-python app.py
-```
+# Operation Modes
 
-4. Open your browser and navigate to:
-   - **Home**: http://localhost:5013
-   - **GraphiQL**: http://localhost:5013/graphiql
-   - **Dashboard**: http://localhost:5013/dashboard
-   - **Login**: http://localhost:5013/login
+DVGA supports Beginner and Expert level game modes, which will change the exploitation difficulty.
 
-### Docker
+# Scenarios
 
-You can also run the application using Docker:
+* **Reconnaissance**
+  * Discovering GraphQL
+  * Fingerprinting GraphQL
+* **Denial of Service**
+  * Batch Query Attack
+  * Deep Recursion Query Attack
+  * Resource Intensive Query Attack
+  * Field Duplication Attack
+  * Aliases based Attack
+* **Information Disclosure**
+  * GraphQL Introspection
+  * GraphiQL Interface
+  * GraphQL Field Suggestions
+  * Server Side Request Forgery
+  * Stack Trace Errors
+* **Code Execution**
+  * OS Command Injection #1
+  * OS Command Injection #2
+* **Injection**
+  * Stored Cross Site Scripting
+  * Log spoofing / Log Injection
+  * HTML Injection
+  * SQL Injection
+* **Authorization Bypass**
+  * GraphQL JWT Token Forge
+  * GraphQL Interface Protection Bypass
+  * GraphQL Query Deny List Bypass
+* **Miscellaneous**
+  * GraphQL Query Weak Password Protection
+  * Arbitrary File Write // Path Traversal
 
-```bash
-# Build the image
-docker build -t social-media-api .
+# Prerequisites
 
-# Run the container
-docker run -p 5013:5013 social-media-api
-```
+The following Python3 libraries are required:
 
-## API Documentation
+* Python3 (3.6 - 3.10)
+* Flask
+* Flask-SQLAlchemy
+* Flask-Sockets
+* Gevent
+* Graphene
+* Graphene-SQLAlchemy
+* Rx
 
-### GraphQL Endpoint
+See [requirements.txt](requirements.txt) for dependencies.
 
-- **URL**: `POST /graphql`
-- **GraphiQL**: Available at `/graphiql`
 
-### Example Queries
+# Installation
 
-#### Get all users
-```graphql
-query {
-  allUsers {
-    id
-    username
-    email
-    role
-  }
-}
-```
+## Docker
 
-#### Get all posts
-```graphql
-query {
-  allPosts {
-    id
-    title
-    content
-    authorId
-    isPublic
-  }
-}
-```
+### Clone the repository
 
-#### Create a new user
-```graphql
-mutation {
-  createUser(
-    username: "newuser"
-    email: "newuser@example.com"
-    password: "password123"
-    role: "user"
-  ) {
-    user {
-      id
-      username
-      email
-      role
-    }
-  }
-}
-```
+`git clone https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application.git && cd Damn-Vulnerable-GraphQL-Application`
 
-#### Create a new post
-```graphql
-mutation {
-  createPost(
-    title: "My First Post"
-    content: "This is my first post using the API!"
-    isPublic: true
-  ) {
-    post {
-      id
-      title
-      content
-      authorId
-      isPublic
-    }
-  }
-}
-```
+### Build the Docker image
 
-### REST API Endpoints
+`docker build -t dvga .`
 
-- `GET /api/users` - Get all users
-- `GET /api/posts` - Get all posts
-- `POST /api/system` - Execute system commands
-- `POST /api/fetch` - Fetch URL content
+### Create a container from the image
 
-### WebSocket
+`docker run -d -t -p 5013:5013 -e WEB_HOST=0.0.0.0 --name dvga dvga`
 
-Connect to `/ws` for real-time features:
+In your browser, navigate to http://localhost:5013
 
-```javascript
-const ws = new WebSocket('ws://localhost:5013/ws');
+Note: if you need the application to bind on a specific port (e.g. 8080), use **-e WEB_PORT=8080**.
 
-// Execute system command
-ws.send(JSON.stringify({
-  type: 'system',
-  command: 'ls -la'
-}));
+## Docker Registry
 
-// Log activity
-ws.send(JSON.stringify({
-  type: 'activity',
-  action: 'user_login',
-  details: 'User logged in successfully'
-}));
-```
+### Pull the docker image from Docker Hub
 
-## Default Data
+`docker pull dolevf/dvga`
 
-The application comes with sample data:
+Docker Hub image: [dolevf/dvga](https://hub.docker.com/r/dolevf/dvga)
 
-### Users
-- **admin** (admin@social.com) - Role: admin
-- **john** (john@social.com) - Role: user
-- **jane** (jane@social.com) - Role: user
+### Create a container from the image
 
-### Posts
-- Welcome to Social Media API
-- Getting Started
-- Private Post (not public)
+`docker run -t -p 5013:5013 -e WEB_HOST=0.0.0.0 dolevf/dvga`
 
-## Development
+In your browser, navigate to http://localhost:5013
 
-### Project Structure
+## Server
 
-```
-├── app.py              # Main application file
-├── requirements.txt    # Python dependencies
-├── templates/          # HTML templates
-│   ├── index.html     # Landing page
-│   ├── graphiql.html  # GraphiQL interface
-│   ├── dashboard.html # Admin dashboard
-│   └── login.html     # Login page
-└── README.md          # This file
-```
+### Navigate to /opt
 
-### Database
+`cd /opt/`
 
-The application uses SQLite for simplicity. The database file (`social_media.db`) is created automatically on first run.
+### Clone the repository
 
-## Security Features
+`git clone git@github.com:dolevf/Damn-Vulnerable-GraphQL-Application.git && cd Damn-Vulnerable-GraphQL-Application`
 
-- Role-based access control
-- Input validation and sanitization
-- Secure password handling
-- Rate limiting (planned)
-- Query complexity analysis (planned)
+### Install Requirements
 
-## Contributing
+`pip3 install -r requirements.txt`
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+### Run application
 
-## License
+`python3 app.py`
 
-This project is licensed under the MIT License. 
+In your browser, navigate to http://localhost:5013.
+
+# Screenshots
+
+![DVGA](https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application/blob/master/static/screenshots/index.png)
+![DVGA](https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application/blob/master/static/screenshots/solution.png)
+![DVGA](https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application/blob/master/static/screenshots/pastes.png)
+![DVGA](https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application/blob/master/static/screenshots/create.png)
+
+# Maintainers
+
+* [Dolev Farhi](https://github.com/dolevf)
+* [Connor McKinnon](https://github.com/connormckinnon93)
+* [Nick Aleks](https://github.com/nicholasaleks)
+# Contributors
+A big Thank You to the kind people who helped make DVGA better:
+ * [Halfluke](https://github.com/halfluke)
+
+# Mentions
+* [Black Hat GraphQL - No Starch Press](https://blackhatgraphql.com)
+* [OWASP Vulnerable Web Applications Directory](https://owasp.org/www-project-vulnerable-web-applications-directory/)
+* [GraphQL Weekly](https://www.graphqlweekly.com/issues/221/#content)
+* [DZone API Security Weekly](https://dzone.com/articles/api-security-weekly-issue-121)
+* [KitPloit](https://www.kitploit.com/2021/02/damn-vulnerable-graphql-application.html)
+* [tl;dr sec #72](https://tldrsec.com/blog/tldr-sec-072/)
+* [Intigriti Blog](https://blog.intigriti.com/2021/02/17/bug-bytes-110-scope-based-recon-finding-more-idors-how-to-hack-sharepoint/)
+* [STÖK - Bounty Thursdays #26](https://www.youtube.com/watch?v=645Tb7ySQFk)
+* [Brakeing Security 2021-007](https://brakeingsecurity.com/2021-007-news-google-asking-for-oss-to-embrace-standards-insider-threat-at-yandex-vectr-discussion)
+* [Yes We Hack - How to Exploit GraphQL](https://blog.yeswehack.com/yeswerhackers/how-exploit-graphql-endpoint-bug-bounty/)
+* [GraphQL Editor](https://blog.graphqleditor.com/dvga)
+* [GraphQL Hacking (Portuguese)](https://www.youtube.com/watch?v=4gXOerUZ7fw)
+* [InQL GraphQL Scanner Demo](https://www.youtube.com/watch?v=KOCBeJmTs78)
+* [H4ck3d - Security Conference 2021 (Spanish)](https://youtu.be/hg_kVoy-W1s)
+* [Christina Hasternath - GraphQLConf 2021](https://www.youtube.com/watch?v=tPO1jl0tCKg)
+* [Hacking APIs (Ch14) by Corey Ball - No Starch Press](https://nostarch.com/hacking-apis)
+* [Hacking Simplified Part #1](https://www.youtube.com/watch?v=w0QOAacuPgQ)
+* [Hacking Simplified Part #2](https://www.youtube.com/watch?v=YA-mL9Z8SNI)
+* [Hacking Simplified Part #3](https://www.youtube.com/watch?v=kUTIFx8vGQs)
+
+# Disclaimer
+
+DVGA is highly insecure, and as such, should not be deployed on internet facing servers. By default, the application is listening on 127.0.0.1 to avoid misconfigurations.
+
+DVGA is intentionally flawed and vulnerable, as such, it comes with no warranties. By using DVGA, you take full responsibility for using it.
+
+# License
+
+It is distributed under the MIT License. See LICENSE for more information.
